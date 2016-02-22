@@ -4,10 +4,10 @@
 	<head>
 		<meta charset="utf-8">
 
-		<title>reveal.js – The HTML Presentation Framework</title>
+		<title>CSS Performance & What is the Browser doing?</title>
 
-		<meta name="description" content="A framework for easily creating beautiful presentations using HTML">
-		<meta name="author" content="Hakim El Hattab">
+		<meta name="description" content="Talk originally made for Confoo 2016">
+		<meta name="author" content="Sarah Etter">
 
 		<meta name="apple-mobile-web-app-capable" content="yes">
 		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -15,7 +15,7 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, minimal-ui">
 
 		<link rel="stylesheet" href="css/reveal.css">
-		<link rel="stylesheet" href="css/theme/black.css" id="theme">
+		<link rel="stylesheet" href="css/theme/white.css" id="theme">
 
 		<!-- Code syntax highlighting -->
 		<link rel="stylesheet" href="lib/css/zenburn.css">
@@ -37,343 +37,297 @@
 	<body>
 
 		<div class="reveal">
-
-			<!-- Any section element inside of this container is displayed as a slide -->
 			<div class="slides">
 				<section>
-					<h1>Reveal.js</h1>
-					<h3>The HTML Presentation Framework</h3>
+					<h1>CSS Performance & What is the Browser doing?</h1>
 					<p>
-						<small>Created by <a href="http://hakim.se">Hakim El Hattab</a> / <a href="http://twitter.com/hakimel">@hakimel</a></small>
+						<small>by <a href="http://sarahetter.com">Sarah Etter</a> / <a href="http://twitter.com/SarahEtter_">@SarahEtter_</a></small>
 					</p>
 				</section>
 
 				<section>
-					<h2>Hello There</h2>
-					<p>
-						reveal.js enables you to create beautiful interactive slide decks using HTML. This presentation will show you examples of what it can do.
-					</p>
-				</section>
+					<h2>Object Models</h2>
+					<div class="object-model">DOM</div>
+					<div class="object-model">CSSOM</div>
 
-				<!-- Example of nested vertical slides -->
-				<section>
-					<section>
-						<h2>Vertical Slides</h2>
-						<p>Slides can be nested inside of each other.</p>
-						<p>Use the <em>Space</em> key to navigate through all slides.</p>
-						<br>
-						<a href="#" class="navigate-down">
-							<img width="178" height="238" data-src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Down arrow">
-						</a>
-					</section>
-					<section>
-						<h2>Basement Level 1</h2>
-						<p>Nested slides are useful for adding additional detail underneath a high level horizontal slide.</p>
-					</section>
-					<section>
-						<h2>Basement Level 2</h2>
-						<p>That's it, time to go back up.</p>
-						<br>
-						<a href="#/2">
-							<img width="178" height="238" data-src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Up arrow" style="transform: rotate(180deg); -webkit-transform: rotate(180deg);">
-						</a>
-					</section>
+                    <aside class="notes">
+                        <p>Once the browser loads in your html & css, it begins building objects that represent your site.</p>
+                        <p>First off - DOM (Document Object Model). This is a tree structure that, if you have done any JS programming, you are very familiar with. Each element in your HTML is a node, and nodes have children. The DOM should be identical between browsers, however if you have incorrectly nested HTML each browser has a slightly different way of parsing through & attempting to correct errors, so there may be slight differences.</p>
+
+                        <p>Once done dom, it creates the CSS Object Model. This is a model that is much like the DOM, but for CSS. It is a tree structure. It contains objects like: StyleSheetList, CSSStyleSheet, CSSStyleRule.</p>
+                    </aside>
 				</section>
 
 				<section>
-					<h2>Slides</h2>
-					<p>
-						Not a coder? Not a problem. There's a fully-featured visual editor for authoring these, try it out at <a href="http://slides.com" target="_blank">http://slides.com</a>.
-					</p>
+					<h2>Object Models</h2>
+					<div class="object-model">DOM</div>
+					<div class="object-model">CSSOM</div>
+                    <div></div>
+                    <div class="object-model">Render Tree</div>
+
+                    <aside class="notes">
+                        <p>After the browser has finished making the DOM and the CSSOM, it combines them both into another model called the Render Tree</p>
+
+                        <p>The render tree is created by going through the DOM (things that actually exist on the website), and adding the CSS rules from the CSSOM to those DOM nodes.</p>
+
+                        <p>Render tree doesn’t contain things that are hidden by css (display:none)</p>
+                    </aside>
 				</section>
 
-				<section>
-					<h2>Point of View</h2>
-					<p>
-						Press <strong>ESC</strong> to enter the slide overview.
-					</p>
-					<p>
-						Hold down alt and click on any element to zoom in on it using <a href="http://lab.hakim.se/zoom-js">zoom.js</a>. Alt + click anywhere to zoom back out.
-					</p>
-				</section>
+                <section>
+                    <h2>Render Tree - Digging Deeper</h2>
+                    <ul>
+                        <li>Style Sharing</li>
+                        <li>CSS Rule Hash Tables</li>
+                        <li>Ancestor Filters</li>
+                    </ul>
 
-				<section>
-					<h2>Touch Optimized</h2>
-					<p>
-						Presentations look great on touch devices, like mobile phones and tablets. Simply swipe through your slides.
-					</p>
-				</section>
+                    <aside class="notes">
+                        <p>How the render tree is created is fairly important.
+                            The dom isn’t matched against every single CSS rule, because that would be insanely slow.
+                            The browser uses different intermediate sorts / searches and data structures to make this matching faster.</p>
+                        <p>A data structure is a way of organizing data. There are many different types of data structures, and they each have a different way of making the task of dealing with data more efficient.</p>
 
-				<section data-markdown>
-					<script type="text/template">
-						## Markdown support
+                        <p><strong>Style Sharing</strong> - simply means that a browser figures out which DOM elements share the exact same styles (for example, two li’s in the same list). This saves having to do the exact same work more than once.</p>
 
-						Write content using inline or external Markdown.
-						Instructions and more info available in the [readme](https://github.com/hakimel/reveal.js#markdown).
+                        <p><strong>CSS Rule Hash tables</strong>. - A hash table (simply put) is an associative array. When creating a hash table, you feed the element you are adding into a hash function, which calculates an index to place that element at in the array. When matching elements from the DOM to this hashtable, you just do that backwards. SO find hash, and only look at elements in that spot in the array. Saves from looking at every other element in other indices.</p>
 
-						```
-						<section data-markdown>
-						  ## Markdown support
+                        <p><strong>Ancestor Filters</strong> - the browser checks to see if this is part of a set. It uses something called a Bloom Filter. A bloom filter uses a large array, and sets all elements in array to one bit - 0. Then, when running elements through the filter, it uses another type of hash function, which gets a number of indices. Then the original bits in the index at those indices are set to 1. So when checking against this filter, you can know for sure if your element matches - if all of it’s hash indexes are 1, then it may be in the set. If any of them are 0, then it is definitely not in the set. This narrows down how many selectors the browser has to compare against.</p>
 
-						  Write content using inline or external Markdown.
-						  Instructions and more info available in the [readme](https://github.com/hakimel/reveal.js#markdown).
-						</section>
-						```
-					</script>
-				</section>
+                        <p>Each browser uses any or all of these, and their exact implementation may be different. There may be some other efficiencies added!</p>
 
-				<section>
-					<section id="fragments">
-						<h2>Fragments</h2>
-						<p>Hit the next arrow...</p>
-						<p class="fragment">... to step through ...</p>
-						<p><span class="fragment">... a</span> <span class="fragment">fragmented</span> <span class="fragment">slide.</span></p>
+                    </aside>
 
-						<aside class="notes">
-							This slide has fragments which are also stepped through in the notes window.
-						</aside>
-					</section>
-					<section>
-						<h2>Fragment Styles</h2>
-						<p>There's different types of fragments, like:</p>
-						<p class="fragment grow">grow</p>
-						<p class="fragment shrink">shrink</p>
-						<p class="fragment fade-out">fade-out</p>
-						<p class="fragment current-visible">current-visible</p>
-						<p class="fragment highlight-red">highlight-red</p>
-						<p class="fragment highlight-blue">highlight-blue</p>
-					</section>
-				</section>
+                </section>
 
-				<section id="transitions">
-					<h2>Transition Styles</h2>
-					<p>
-						You can select from different transitions, like: <br>
-						<a href="?transition=none#/transitions">None</a> -
-						<a href="?transition=fade#/transitions">Fade</a> -
-						<a href="?transition=slide#/transitions">Slide</a> -
-						<a href="?transition=convex#/transitions">Convex</a> -
-						<a href="?transition=concave#/transitions">Concave</a> -
-						<a href="?transition=zoom#/transitions">Zoom</a>
-					</p>
-				</section>
 
-				<section id="themes">
-					<h2>Themes</h2>
-					<p>
-						reveal.js comes with a few themes built in: <br>
-						<!-- Hacks to swap themes after the page has loaded. Not flexible and only intended for the reveal.js demo deck. -->
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/black.css'); return false;">Black (default)</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/white.css'); return false;">White</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/league.css'); return false;">League</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/sky.css'); return false;">Sky</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/beige.css'); return false;">Beige</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/simple.css'); return false;">Simple</a> <br>
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/serif.css'); return false;">Serif</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/blood.css'); return false;">Blood</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/night.css'); return false;">Night</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/moon.css'); return false;">Moon</a> -
-						<a href="#" onclick="document.getElementById('theme').setAttribute('href','css/theme/solarized.css'); return false;">Solarized</a>
-					</p>
-				</section>
+                <section>
+                    <h2>Rendering</h2>
+                    <div class="object-model">Layout</div>
+                    <div class="object-model">Paint</div>
+                    <div class="object-model">Composite</div>
 
-				<section>
-					<section data-background="#dddddd">
-						<h2>Slide Backgrounds</h2>
-						<p>
-							Set <code>data-background="#dddddd"</code> on a slide to change the background color. All CSS color formats are supported.
-						</p>
-						<a href="#" class="navigate-down">
-							<img width="178" height="238" data-src="https://s3.amazonaws.com/hakim-static/reveal-js/arrow.png" alt="Down arrow">
-						</a>
-					</section>
-					<section data-background="https://s3.amazonaws.com/hakim-static/reveal-js/image-placeholder.png">
-						<h2>Image Backgrounds</h2>
-						<pre><code class="hljs">&lt;section data-background="image.png"&gt;</code></pre>
-					</section>
-					<section data-background="https://s3.amazonaws.com/hakim-static/reveal-js/image-placeholder.png" data-background-repeat="repeat" data-background-size="100px">
-						<h2>Tiled Backgrounds</h2>
-						<pre><code class="hljs" style="word-wrap: break-word;">&lt;section data-background="image.png" data-background-repeat="repeat" data-background-size="100px"&gt;</code></pre>
-					</section>
-					<section data-background-video="https://s3.amazonaws.com/static.slid.es/site/homepage/v1/homepage-video-editor.mp4,https://s3.amazonaws.com/static.slid.es/site/homepage/v1/homepage-video-editor.webm" data-background-color="#000000">
-						<div style="background-color: rgba(0, 0, 0, 0.9); color: #fff; padding: 20px;">
-							<h2>Video Backgrounds</h2>
-							<pre><code class="hljs" style="word-wrap: break-word;">&lt;section data-background-video="video.mp4,video.webm"&gt;</code></pre>
-						</div>
-					</section>
-					<section data-background="http://i.giphy.com/90F8aUepslB84.gif">
-						<h2>... and GIFs!</h2>
-					</section>
-				</section>
+                    <aside class="notes">
+                        <p>Once render tree is done, the browser does the actual rendering. These steps are Layout, Paint, and Composite.</p>
+                    </aside>
+                </section>
 
-				<section data-transition="slide" data-background="#4d7e65" data-background-transition="zoom">
-					<h2>Background Transitions</h2>
-					<p>
-						Different background transitions are available via the backgroundTransition option. This one's called "zoom".
-					</p>
-					<pre><code class="hljs">Reveal.configure({ backgroundTransition: 'zoom' })</code></pre>
-				</section>
-
-				<section data-transition="slide" data-background="#b5533c" data-background-transition="zoom">
-					<h2>Background Transitions</h2>
-					<p>
-						You can override background transitions per-slide.
-					</p>
-					<pre><code class="hljs" style="word-wrap: break-word;">&lt;section data-background-transition="zoom"&gt;</code></pre>
-				</section>
-
-				<section>
-					<h2>Pretty Code</h2>
-					<pre><code class="hljs" data-trim contenteditable>
-function linkify( selector ) {
-  if( supports3DTransforms ) {
-
-    var nodes = document.querySelectorAll( selector );
-
-    for( var i = 0, len = nodes.length; i &lt; len; i++ ) {
-      var node = nodes[i];
-
-      if( !node.className ) {
-        node.className += ' roll';
-      }
-    }
-  }
+                <section>
+                    <h2>Layout (aka Reflow)</h2>
+                    <ul>
+                        <li>Creates the layout of the site</li>
+                        <li>Takes all positioning and sizing rules and creates a box-only layout of the site.</li>
+                        <li>Calculates number of lines for text and uses line height</li>
+                        <li>Recursive process</li>
+                    </ul>
+                    <aside class="notes">
+                        <p><strong>Recursive process</strong> -
+                        First finds width of parent, then loops down to the deepest node, and finds it’s size & positioning, then goes up through the tree.</p>
+                        <p>This is why when you have a fixed height and width on a parent, if the contents are larger they overflow.</p>
+                        <p>The deeper your DOM, the longer this process takes.</p>
+                    </aside>
+                </section>
+                <section>
+                    <h2>Layout Visualization</h2>
+                    <iframe src="https://www.youtube.com/embed/ZTnIxIA5KGw" frameborder="0" allowfullscreen></iframe>
+                    <aside class="notes">
+                        At the end - the flash, there is a layout invalidation, so it has to reflow
+                    </aside>
+                </section>
+                <section>
+                    <h2>Layout Invalidations</h2>
+                    <ul>
+                        <li>Manipulating DOM tree (JavaScript)</li>
+                        <li>Hiding things (adding display: none)</li>
+                        <li>Resizing window</li>
+                        <li>Changing the font</li>
+                        <li>Adding or removing a stylesheet</li>
+                        <li>Content changes</li>
+                        <li>Activation of CSS pseudo classes</li>
+                        <li>Manipulating the class attribute</li>
+                        <li>Calculating offsetWidth and offsetHeight</li>
+                        <li>And more...</li>
+                    </ul>
+                    <aside class="notes">
+                        <p>So whenever you do these things, the browser will have a higher workload, and your website may encounter some “jank” or lower performance.</p>
+                        <p>When images are loaded & the browser knows what size they are, it causes the browser to go through layout / reflow and paint cycle again. This is why you should set width and height attributes on images.</p>
+                    </aside>
+                </section>
+                <section>
+                    <h2>Paint</h2>
+                    <ul>
+                        <li>Browser creates layers and adds the colours to pixels and objects to these layers.</li>
+                        <li>Not actually on the page yet.</li>
+                        <li>Browser sends layer to the CPU or in some cases GPU</li>
+                        <li>Processor creates the texture (bitmap final image) to be displayed on the page</li>
+                    </ul>
+                    <aside class="notes">
+                        GPU - 3d transforms, anything with will-change css property set.
+                    </aside>
+                </section>
+                <section>
+                    <h2>Composite</h2>
+                    <ul>
+                        <li>Taking the painted layers and placing them on the previously calculated layout.</li>
+                    </ul>
+                    <aside class="notes">
+                        This is the least computationally heavy action.
+                    </aside>
+                </section>
+                <section>
+                    <h2>So what does this all mean?</h2>
+                    <div class="fragment">
+                        <pre><code class="hljs css">
+.person {
+    color: blue;
 }
-					</code></pre>
-					<p>Code syntax highlighting courtesy of <a href="http://softwaremaniacs.org/soft/highlight/en/description/">highlight.js</a>.</p>
-				</section>
 
-				<section>
-					<h2>Marvelous List</h2>
-					<ul>
-						<li>No order here</li>
-						<li>Or here</li>
-						<li>Or here</li>
-						<li>Or here</li>
-					</ul>
-				</section>
+div.wrapper > div.tagDiv > div.tagDiv.layer2 >
+ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
+    color: blue;
+}
+                        </code></pre>
+                    </div>
+                    <aside class="notes">
+                        <p>The Browser is doing most of the work for you.</p>
+                        <p>Because of the work done & efficiencies added at the Render Tree creating stage, it is impossible to tell how each of your css rules will be parsed.</p>
+                        <p>And as it turns out, the time it takes the browser to render different css selectors is negligible. (Ben Frain did a comparison in early 2014, and the biggest difference in time with a humonguous DOM using all insane selectors where every element is qualified with a class, along with multiple adjacent selectors and child selectors OR a simple class selector was 13 milliseconds).</p>
+                        <p>It isn’t your job to write the css structure for the browser. It’s the browser’s job to make it efficient. Each engine does things a bit differently, so trying to guess how it will split up your selectors is futile.</p>
+                        <p>The two selectors shown will have very negligible time differences in the browser rendering, unless the second is used for every element. However, one is way more semantic and easier to write.</p>
+                    </aside>
+                </section>
 
-				<section>
-					<h2>Fantastic Ordered List</h2>
-					<ol>
-						<li>One is smaller than...</li>
-						<li>Two is smaller than...</li>
-						<li>Three!</li>
-					</ol>
-				</section>
+                <section>
+                    <h2>So what can I do?</h2>
+                    <ul>
+                        <li>Two categories:
+                            <ol>
+                                <li>Load-time Optimization</li>
+                                <li>After Load Optimization</li>
+                            </ol>
+                        </li>
+                    </ul>
+                    <aside class="notes">
+                        There are limited things you can do to help load behaviour, but the major thing to know about CSS performance
+                        is that it's not just about loading quickly, it's about how your site actually feels while using it. When there
+                        are 'hiccups' in rendering, this is called jank. For example: when images load slowly, and layout is triggered, it makes
+                        your site feel clunky.
+                    </aside>
+                </section>
 
-				<section>
-					<h2>Tabular Tables</h2>
-					<table>
-						<thead>
-							<tr>
-								<th>Item</th>
-								<th>Value</th>
-								<th>Quantity</th>
-							</tr>
-						</thead>
-						<tbody>
-							<tr>
-								<td>Apples</td>
-								<td>$1</td>
-								<td>7</td>
-							</tr>
-							<tr>
-								<td>Lemonade</td>
-								<td>$2</td>
-								<td>18</td>
-							</tr>
-							<tr>
-								<td>Bread</td>
-								<td>$3</td>
-								<td>2</td>
-							</tr>
-						</tbody>
-					</table>
-				</section>
+                <section>
+                    <section>
+                        <h2>Load-time Optimization</h2>
+                        <ul>
+                            <li>Stylesheet Size</li>
+                            <li>Critical CSS</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Stylesheet Size</h3>
+                        <ul>
+                            <li>UnCSS - grunt tool that uses PhantomJS</li>
+                            <li>Less specific, more modular code (Easier to maintain, too!)</li>
+                            <li>In general: Write as little css as possible</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Critical CSS</h3>
+                        <ul>
+                            <li>Inline above the fold CSS</li>
+                            <li>critical grunt tool - finds critical css for you</li>
+                            <li>Warning: inline won’t be cached as css in the browser</li>
+                        </ul>
+                    </section>
+                </section>
 
-				<section>
-					<h2>Clever Quotes</h2>
-					<p>
-						These guys come in two forms, inline: <q cite="http://searchservervirtualization.techtarget.com/definition/Our-Favorite-Technology-Quotations">
-						&ldquo;The nice thing about standards is that there are so many to choose from&rdquo;</q> and block:
-					</p>
-					<blockquote cite="http://searchservervirtualization.techtarget.com/definition/Our-Favorite-Technology-Quotations">
-						&ldquo;For years there has been a theory that millions of monkeys typing at random on millions of typewriters would
-						reproduce the entire works of Shakespeare. The Internet has proven this theory to be untrue.&rdquo;
-					</blockquote>
-				</section>
+                <section>
+                    <h2>After Load Optimization</h2>
+                        <p>Considerations:</p>
+                    <ul>
+                        <li>Scrolling</li>
+                        <li>Animations</li>
+                        <li>Interactions</li>
+                    </ul>
 
-				<section>
-					<h2>Intergalactic Interconnections</h2>
-					<p>
-						You can link between slides internally,
-						<a href="#/2/3">like this</a>.
-					</p>
-				</section>
+                    <aside class="notes">
+                        <p><strong>Jank!</strong>
+                        To move things - always use transform: translate.
+                        http://csstriggers.com/</p>
 
-				<section>
-					<h2>Speaker View</h2>
-					<p>There's a <a href="https://github.com/hakimel/reveal.js#speaker-notes">speaker view</a>. It includes a timer, preview of the upcoming slide as well as your speaker notes.</p>
-					<p>Press the <em>S</em> key to try it out.</p>
+                        <p>Interactions - CSS invalidation!</p>
+                        <p>Click on nav, if add “active” class to whole body, then ALL css is invalidated & need to do layout, paint, composite again. Want to only invalidate the smallest chunk possible.</p>
 
-					<aside class="notes">
-						Oh hey, these are some notes. They'll be hidden in your presentation, but you can see them if you open the speaker notes window (hit 's' on your keyboard).
-					</aside>
-				</section>
+                        <p>Animations - CSS always! ORRRR if must use Javascript -  use requestAnimationFrame - allows browser to figure out when the best time to move things on the page is, along with other layout & painting tasks. Also saves battery of user, as with setTimeout the animation is always happening, even when the animation is in a background tab.</p>
+                    </aside>
+                </section>
 
-				<section>
-					<h2>Export to PDF</h2>
-					<p>Presentations can be <a href="https://github.com/hakimel/reveal.js#pdf-export">exported to PDF</a>, here's an example:</p>
-					<iframe src="https://www.slideshare.net/slideshow/embed_code/42840540" width="445" height="355" frameborder="0" marginwidth="0" marginheight="0" scrolling="no" style="border:3px solid #666; margin-bottom:5px; max-width: 100%;" allowfullscreen> </iframe>
-				</section>
+                <section>
+                    <h2>Expensive Styles</h2>
 
-				<section>
-					<h2>Global State</h2>
-					<p>
-						Set <code>data-state="something"</code> on a slide and <code>"something"</code>
-						will be added as a class to the document element when the slide is open. This lets you
-						apply broader style changes, like switching the page background.
-					</p>
-				</section>
+                    <ul>
+                        <li>Some styles take a slightly longer time to render initially
+                        <ul>
+                            <li>box-shadow</li>
+                            <li>border-radius</li>
+                            <li>transparency (opacity and rgba/hsla)</li>
+                            <li>transform</li>
+                            <li>css filters</li>
+                        </ul>
+                        </li>
+                    </ul>
+                    <aside class="notes">
+                        <p>Notice that these are all fairly new properties. Render time may improve, as well as it's important to just use these
+                        sparingly.</p>
+                    </aside>
+                </section>
 
-				<section data-state="customevent">
-					<h2>State Events</h2>
-					<p>
-						Additionally custom events can be triggered on a per slide basis by binding to the <code>data-state</code> name.
-					</p>
-					<pre><code class="javascript" data-trim contenteditable style="font-size: 18px;">
-Reveal.addEventListener( 'customevent', function() {
-	console.log( '"customevent" has fired' );
-} );
-					</code></pre>
-				</section>
+                <section>
+                    <section>
+                        <h2>Chrome Devtools Monitoring</h2>
 
-				<section>
-					<h2>Take a Moment</h2>
-					<p>
-						Press B or . on your keyboard to pause the presentation. This is helpful when you're on stage and want to take distracting slides off the screen.
-					</p>
-				</section>
+                        <ul>
+                            <li>Rendering Tab</li>
+                            <li>Timeline</li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h3>Rendering Tab</h3>
+                        <ul>
+                            <li>Enable Paint Flashing</li>
+                            <li>Show FPS meter</li>
+                            <li>Show scrolling perf issues</li>
+                            <li>Show layer borders</li>
+                        </ul>
+                        <aside class="notes">
+                            <p>Enable paint flashing - click on, go to http://www.cnn.com/ (Entire Window flashes, indicating a lot of full invalidation) VS. https://www.reddit.com/  - can see when individual things are painted on load. Then show difference in scrolling, how reddit flashes and cnn doesn’t. CNN scroll is a much better, less janky experience, even though reddit doesn’t have a lot to it - just text, small thumbnails.</p>
 
-				<section>
-					<h2>Much more</h2>
-					<ul>
-						<li>Right-to-left support</li>
-						<li><a href="https://github.com/hakimel/reveal.js#api">Extensive JavaScript API</a></li>
-						<li><a href="https://github.com/hakimel/reveal.js#auto-sliding">Auto-progression</a></li>
-						<li><a href="https://github.com/hakimel/reveal.js#parallax-background">Parallax backgrounds</a></li>
-						<li><a href="https://github.com/hakimel/reveal.js#keyboard-bindings">Custom keyboard bindings</a></li>
-					</ul>
-				</section>
+                            <p>Show FPS meter - looking for 60 FPS</p>
 
-				<section style="text-align: left;">
-					<h1>THE END</h1>
-					<p>
-						- <a href="http://slides.com">Try the online editor</a> <br>
-						- <a href="https://github.com/hakimel/reveal.js">Source code &amp; documentation</a>
-					</p>
-				</section>
+                            <p>Show scrolling perf issues - http://www.nytimes.com/ (shows mousewheel event listener) in top corner</p>
+
+                            <p>Show layer borders - show in own presentation. Want to make layers small. Also notice that paint doesn't occur on animation, but on end of state when another class is added.</p>
+                        </aside>
+                    </section>
+                    <section>
+                        <h3>Timeline</h3>
+                        <ul>
+                            <li>Record Timeline</li>
+                            <li>Watch for long paint times</li>
+                            <li>Diagnose the issue</li>
+                        </ul>
+                    </section>
+                </section>
+
+                <section>
+                    <h1>Questions?</h1>
+                </section>
+
+
+
+
+
+
 
 			</div>
 
