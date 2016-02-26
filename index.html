@@ -45,17 +45,39 @@
 					</p>
 				</section>
 
-				<section>
-					<h2>Object Models</h2>
-					<div class="object-model">DOM</div>
-					<div class="object-model">CSSOM</div>
-
+                <section>
+                    <h1>Sarah Etter</h1>
+                    <br>
+                    <a href="http://sarahetter.com">sarahetter.com</a>
+                    <br>
+                    <a href="http://twitter.com/SarahEtter_">@SarahEtter_</a>
+                    <br>
+                    <a href="mailto:sarah@sarahetter.com">sarah@sarahetter.com</a>
+                    <br><br><br><br>
+                    <img src="img/territoriallogo.svg" style="max-width:25%;">
                     <aside class="notes">
-                        <p>Once the browser loads in your html & css, it begins building objects that represent your site.</p>
-                        <p>First off - DOM (Document Object Model). This is a tree structure that, if you have done any JS programming, you are very familiar with. Each element in your HTML is a node, and nodes have children. The DOM should be identical between browsers, however if you have incorrectly nested HTML each browser has a slightly different way of parsing through & attempting to correct errors, so there may be slight differences.</p>
-
-                        <p>Once done dom, it creates the CSS Object Model. This is a model that is much like the DOM, but for CSS. It is a tree structure. It contains objects like: StyleSheetList, CSSStyleSheet, CSSStyleRule.</p>
+                        Have a few chapters to this talk. First browser works, then css optimizing, then devtools
+                        Won't talk about differences between browsers, just keep in mind that each one has their own implementation, and differ slightly
                     </aside>
+                </section>
+
+				<section>
+                    <section>
+                        <h2>Object Models</h2>
+                        <div class="object-model">DOM</div>
+                        <div class="object-model">CSSOM</div>
+
+                        <aside class="notes">
+                            <p>Once the browser loads in your HTML & CSS, it begins building objects that represent your site.</p>
+                            <p>First off - DOM (Document Object Model). This is a tree structure that, if you have done any JS programming, you are very familiar with. Each element in your HTML is a node, and nodes have children. The DOM should be identical between browsers, however if you have incorrectly nested HTML each browser has a slightly different way of parsing through & attempting to correct errors, so there may be slight differences.</p>
+
+                            <p>Once done dom, it creates the CSS Object Model. This is a model that is much like the DOM, but for CSS. It is a tree structure. It contains objects like: StyleSheetList, CSSStyleSheet, CSSStyleRule.</p>
+                        </aside>
+                    </section>
+                    <section>
+                        <h2>Tree Structure</h2>
+                        <img src="img/tree.gif">
+                    </section>
 				</section>
 
 				<section>
@@ -70,33 +92,47 @@
 
                         <p>The render tree is created by going through the DOM (things that actually exist on the website), and adding the CSS rules from the CSSOM to those DOM nodes.</p>
 
-                        <p>Render tree doesn’t contain things that are hidden by css (display:none)</p>
+                        <p>Render tree doesn’t contain things that are hidden by CSS (display:none)</p>
                     </aside>
 				</section>
 
                 <section>
-                    <h2>Render Tree - Digging Deeper</h2>
-                    <ul>
-                        <li>Style Sharing</li>
-                        <li>CSS Rule Hash Tables</li>
-                        <li>Ancestor Filters</li>
-                    </ul>
+                    <section>
+                        <h2>Render Tree - Digging Deeper</h2>
+                        <ul>
+                            <li>Style Sharing</li>
+                            <li>CSS Rule Hash Tables</li>
+                            <li>Ancestor Filters</li>
+                        </ul>
+                        <aside class="notes">
+                            <p>How the render tree is created is fairly important.
+                                The dom isn’t matched against every single CSS rule, because that would be insanely slow.
+                                The browser uses different intermediate sorts / searches and data structures to make this matching faster.</p>
+                            <p>A data structure is a way of organizing data. There are many different types of data structures, and they each have a different way of making the task of dealing with data more efficient.</p>
+                            <p>Each browser uses any or all of these, and their exact implementation may be different. There may be some other efficiencies added!</p>
 
-                    <aside class="notes">
-                        <p>How the render tree is created is fairly important.
-                            The dom isn’t matched against every single CSS rule, because that would be insanely slow.
-                            The browser uses different intermediate sorts / searches and data structures to make this matching faster.</p>
-                        <p>A data structure is a way of organizing data. There are many different types of data structures, and they each have a different way of making the task of dealing with data more efficient.</p>
+                            <p><strong>Style Sharing</strong> - simply means that a browser figures out which DOM elements share the exact same styles (for example, two li’s in the same list). This saves having to do the exact same work more than once.</p>
 
-                        <p><strong>Style Sharing</strong> - simply means that a browser figures out which DOM elements share the exact same styles (for example, two li’s in the same list). This saves having to do the exact same work more than once.</p>
+                        </aside>
+                    </section>
+                    <section>
+                        <h2>CSS Rule Hash Tables</h2>
+                        <img src="img/hashtable.png">
+                        <aside class="notes">
+                            <p><strong>CSS Rule Hash tables</strong>. - A hash table (simply put) is an associative array. When creating a hash table, you feed the element you are adding into a hash function, which calculates an index to place that element at in the array. When matching elements from the DOM to this hashtable, you just do that backwards. SO find hash, and only look at elements in that spot in the array. Saves from looking at every other element in other indices.</p>
+                            <p>Sometimes there are hash tables within hashtables</p>
+                        </aside>
+                    </section>
 
-                        <p><strong>CSS Rule Hash tables</strong>. - A hash table (simply put) is an associative array. When creating a hash table, you feed the element you are adding into a hash function, which calculates an index to place that element at in the array. When matching elements from the DOM to this hashtable, you just do that backwards. SO find hash, and only look at elements in that spot in the array. Saves from looking at every other element in other indices.</p>
+                    <section>
+                        <h2>Ancestor Filters</h2>
+                        <img src="img/bloomfilter.png">
+                        <small>By David Eppstein - self-made, originally for a talk at WADS 2007, Public Domain, https://commons.wikimedia.org/w/index.php?curid=2609777</small>
+                        <aside class="notes">
+                            <p><strong>Ancestor Filters</strong> - the browser checks to see if this is part of a set. It uses something called a Bloom Filter. A bloom filter uses a large array, and sets all elements in array to one bit - 0. Then, when running elements through the filter, it uses another type of hash function, which gets a number of indices. Then the original bits in the index at those indices are set to 1. So when checking against this filter, you can know for sure if your element matches - if all of it’s hash indexes are 1, then it may be in the set. If any of them are 0, then it is definitely not in the set. This narrows down how many selectors the browser has to compare against.</p>
+                        </aside>
+                    </section>
 
-                        <p><strong>Ancestor Filters</strong> - the browser checks to see if this is part of a set. It uses something called a Bloom Filter. A bloom filter uses a large array, and sets all elements in array to one bit - 0. Then, when running elements through the filter, it uses another type of hash function, which gets a number of indices. Then the original bits in the index at those indices are set to 1. So when checking against this filter, you can know for sure if your element matches - if all of it’s hash indexes are 1, then it may be in the set. If any of them are 0, then it is definitely not in the set. This narrows down how many selectors the browser has to compare against.</p>
-
-                        <p>Each browser uses any or all of these, and their exact implementation may be different. There may be some other efficiencies added!</p>
-
-                    </aside>
 
                 </section>
 
@@ -134,35 +170,19 @@
                         At the end - the flash, there is a layout invalidation, so it has to reflow
                     </aside>
                 </section>
-                <section>
-                    <h2>Layout Invalidations</h2>
-                    <ul>
-                        <li>Manipulating DOM tree (JavaScript)</li>
-                        <li>Hiding things (adding display: none)</li>
-                        <li>Resizing window</li>
-                        <li>Changing the font</li>
-                        <li>Adding or removing a stylesheet</li>
-                        <li>Content changes</li>
-                        <li>Activation of CSS pseudo classes</li>
-                        <li>Manipulating the class attribute</li>
-                        <li>Calculating offsetWidth and offsetHeight</li>
-                        <li>And more...</li>
-                    </ul>
-                    <aside class="notes">
-                        <p>So whenever you do these things, the browser will have a higher workload, and your website may encounter some “jank” or lower performance.</p>
-                        <p>When images are loaded & the browser knows what size they are, it causes the browser to go through layout / reflow and paint cycle again. This is why you should set width and height attributes on images.</p>
-                    </aside>
-                </section>
+
                 <section>
                     <h2>Paint</h2>
                     <ul>
-                        <li>Browser creates layers and adds the colours to pixels and objects to these layers.</li>
+                        <li>Browser creates layers and adds the colours to pixels on these layers.</li>
                         <li>Not actually on the page yet.</li>
                         <li>Browser sends layer to the CPU or in some cases GPU</li>
                         <li>Processor creates the texture (bitmap final image) to be displayed on the page</li>
                     </ul>
                     <aside class="notes">
-                        GPU - 3d transforms, anything with will-change css property set.
+                        <p>GPU - 3d transforms, anything with will-change CSS property set. Makes rendering faster</p>
+                        <p>will-change - added to hint to browsers that this might be a good thing to send to GPU for faster rendering</p>
+                        <p>Don't put will-change on everything, as that has the same issues has having everything go to CPU. </p>
                     </aside>
                 </section>
                 <section>
@@ -175,10 +195,32 @@
                     </aside>
                 </section>
                 <section>
+                    <h2>Layout Invalidations</h2>
+                    <ul>
+                        <li>Manipulating DOM tree</li>
+                        <li>Hiding things (adding display: none)</li>
+                        <li>Resizing window</li>
+                        <li>Changing the font</li>
+                        <li>Adding or removing a stylesheet</li>
+                        <li>Content changes</li>
+                        <li>Manipulating the class attribute</li>
+                        <li>Getting offsetWidth and offsetHeight </li>
+                        <li>And more...</li>
+                    </ul>
+                    <aside class="notes">
+                        <p>So whenever you do these things, the browser will have a higher workload, and your website may encounter some “jank” or lower performance.</p>
+                        <p>The browser has to go through layout, paint, and composite again..</p>
+                    </aside>
+                </section>
+                <section>
                     <h2>So what does this all mean?</h2>
                     <div class="fragment">
                         <pre><code class="hljs css">
-.person {
+.link {
+    color: blue;
+}
+
+.tagLi .tagB a.TagA.link {
     color: blue;
 }
 
@@ -186,14 +228,28 @@ div.wrapper > div.tagDiv > div.tagDiv.layer2 >
 ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
     color: blue;
 }
+
+
                         </code></pre>
                     </div>
                     <aside class="notes">
-                        <p>The Browser is doing most of the work for you.</p>
+                        <p>As far as your stylesheet structure, The Browser is doing most of the work for you.</p>
                         <p>Because of the work done & efficiencies added at the Render Tree creating stage, it is impossible to tell how each of your css rules will be parsed.</p>
-                        <p>And as it turns out, the time it takes the browser to render different css selectors is negligible. (Ben Frain did a comparison in early 2014, and the biggest difference in time with a humonguous DOM using all insane selectors where every element is qualified with a class, along with multiple adjacent selectors and child selectors OR a simple class selector was 13 milliseconds).</p>
-                        <p>It isn’t your job to write the css structure for the browser. It’s the browser’s job to make it efficient. Each engine does things a bit differently, so trying to guess how it will split up your selectors is futile.</p>
-                        <p>The two selectors shown will have very negligible time differences in the browser rendering, unless the second is used for every element. However, one is way more semantic and easier to write.</p>
+                        <p>And as it turns out, the time it takes the browser to render different css selectors is negligible. (Ben Frain did a comparison in early 2014 with 20 diff selectors, and the biggest difference in time with a humonguous DOM (5000 nested elements) 14 ms. .</p>
+                        <p>first selector - 50.4 ms. second - 50.2 ms, third - 64.6 ms</p>
+                        <p>Difference is in Chrome. diff between first two is easily within margin of error of the calculation method used</p>
+                        <p>Different browsers had different slowest selector</p>
+                        <p>It isn’t your job to write the CSS structure for the browser. It’s the browser’s job to make it efficient. Each engine does things a bit differently, so trying to guess how it will split up your selectors is futile.</p>
+                        <p>However, one is way more semantic and easier to write. Don't JUST write it because it's faster, write it because it makes sense.</p>
+                    </aside>
+                </section>
+
+                <section>
+                    <h2>Why optimize?</h2>
+                    <a href="https://wpostats.com/">https://wpostats.com/</a>
+                    <aside class="notes">
+                        This is a site with blog entries about tons of sites that lowered page latency/load time & saw a positive output in regards to conversions
+                    <p>Makes you, your boss, your client money</p>
                     </aside>
                 </section>
 
@@ -219,6 +275,7 @@ ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
                     <section>
                         <h2>Load-time Optimization</h2>
                         <ul>
+                            <li>CDN</li>
                             <li>Stylesheet Size</li>
                             <li>Critical CSS</li>
                         </ul>
@@ -226,40 +283,84 @@ ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
                     <section>
                         <h3>Stylesheet Size</h3>
                         <ul>
-                            <li>UnCSS - grunt tool that uses PhantomJS</li>
+                            <li>UnCSS - npm package that uses PhantomJS</li>
+                                <ul><li><small><a href="https://github.com/giakki/uncss">https://github.com/giakki/uncss</a></small></li></ul>
                             <li>Less specific, more modular code (Easier to maintain, too!)</li>
-                            <li>In general: Write as little css as possible</li>
+                            <li>In general: Write as little CSS as possible</li>
+                            <li>DRY</li>
                         </ul>
+                        <aside class="notes">
+                            <p>Avail in both grunt & gulp flavours</p>
+                            <p>PhantomJS - headless browser. Executes through command line, doesn't output anything to a GUI. Webkit engine</p>
+                            <p>extra css is added to cssom, so not only saving on DL time</p>
+                            <p>DRY - as always, if you are seeing repetitive code, you should be abstracting it out</p>
+                        </aside>
                     </section>
                     <section>
                         <h3>Critical CSS</h3>
                         <ul>
                             <li>Inline above the fold CSS</li>
-                            <li>critical grunt tool - finds critical css for you</li>
-                            <li>Warning: inline won’t be cached as css in the browser</li>
+                            <li>critical npm package - finds critical CSS for you
+                                <ul><li><small><a href="https://www.npmjs.com/package/critical-css">https://www.npmjs.com/package/critical-css</a></small></li></ul></li>
+                            <li>Warning: inline won’t leverage browser caching</li>
                         </ul>
+                        <aside class="notes">
+                            <p>include all of the CSS that is required to style the top section of your site</p>
+                            <p>Inline means no second request, no latency</p>
+                        </aside>
                     </section>
                 </section>
 
                 <section>
-                    <h2>After Load Optimization</h2>
+                    <section>
+                        <h2>After Load Optimization</h2>
                         <p>Considerations:</p>
-                    <ul>
-                        <li>Scrolling</li>
-                        <li>Animations</li>
-                        <li>Interactions</li>
-                    </ul>
-
-                    <aside class="notes">
-                        <p><strong>Jank!</strong>
-                        To move things - always use transform: translate.
-                        http://csstriggers.com/</p>
-
-                        <p>Interactions - CSS invalidation!</p>
-                        <p>Click on nav, if add “active” class to whole body, then ALL css is invalidated & need to do layout, paint, composite again. Want to only invalidate the smallest chunk possible.</p>
-
-                        <p>Animations - CSS always! ORRRR if must use Javascript -  use requestAnimationFrame - allows browser to figure out when the best time to move things on the page is, along with other layout & painting tasks. Also saves battery of user, as with setTimeout the animation is always happening, even when the animation is in a background tab.</p>
-                    </aside>
+                        <ul>
+                            <li>Scrolling</li>
+                            <li>Animations</li>
+                            <li>Interactions</li>
+                            <li><a href="http://csstriggers.com/">http://csstriggers.com/</a></li>
+                        </ul>
+                    </section>
+                    <section>
+                        <h2>Scrolling</h2>
+                        <ul>
+                            <li>Browser needs to be painting during scroll</li>
+                        </ul>
+                        <aside class="notes">
+                            <ul>
+                                <li>Parallax - large portion needs repainting</li>
+                                <li>Requesting offsetTop - causes reflow</li>
+                                <li>position: fixed;</li>
+                            </ul>
+                        </aside>
+                    </section>
+                    <section>
+                        <h2>Animations</h2>
+                        <ul>
+                            <li>CSS animations/transitions preferred!</li>
+                            <li>Don't use setTimeout</li>
+                            <li>requestAnimationFrame(function())</li>
+                            <li>transform: translate(); instead of top/right/bottom/left</li>
+                        </ul>
+                        <aside class="notes">
+                            css animations - just smoother, better optimized.<br>
+                            setTimeout - bad for battery, isn't synched with paint cycles <br>
+                            requestAnimationFrame -allows browser to set exactly when best time is. <br>
+                            transform translate only triggers composite, so no layout or paint are needed.
+                        </aside>
+                    </section>
+                    <section>
+                        <h2>Interaction</h2>
+                        <ul>
+                            <li>Beware of layout invalidations</li>
+                        </ul>
+                        <aside class="notes">
+                            <p>Interactions - CSS invalidation!</p>
+                            <p>Click on nav, if add “active” class to whole body, then ALL CSS is invalidated & need to do not only layout, but layout, paint, composite again. Want to only invalidate the smallest chunk possible.</p>
+                            <p>Some frameworks add classes to body to change state - BAD BAD BAD</p>
+                        </aside>
+                    </section>
                 </section>
 
                 <section>
@@ -272,7 +373,7 @@ ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
                             <li>border-radius</li>
                             <li>transparency (opacity and rgba/hsla)</li>
                             <li>transform</li>
-                            <li>css filters</li>
+                            <li>CSS filters</li>
                         </ul>
                         </li>
                     </ul>
@@ -300,7 +401,9 @@ ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
                             <li>Show layer borders</li>
                         </ul>
                         <aside class="notes">
+
                             <p>Enable paint flashing - click on, go to http://www.cnn.com/ (Entire Window flashes, indicating a lot of full invalidation) VS. https://www.reddit.com/  - can see when individual things are painted on load. Then show difference in scrolling, how reddit flashes and cnn doesn’t. CNN scroll is a much better, less janky experience, even though reddit doesn’t have a lot to it - just text, small thumbnails.</p>
+                            <p>highlighted area should be small. bigger area, slower it’ll be.</p>
 
                             <p>Show FPS meter - looking for 60 FPS</p>
 
@@ -313,14 +416,23 @@ ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
                         <h3>Timeline</h3>
                         <ul>
                             <li>Record Timeline</li>
-                            <li>Watch for long paint times</li>
+                            <li>Watch for long frames</li>
                             <li>Diagnose the issue</li>
                         </ul>
                     </section>
+                    <aside class="notes">
+                        http://pitchfork.com/features/cover-story/reader/daft-punk/<br>
+                    </aside>
                 </section>
 
                 <section>
                     <h1>Questions?</h1>
+                </section>
+
+                <section>
+                    <ul class="super-small">
+                        <li><a href="http://stackoverflow.com/questions/19330731/tree-implementation-in-java-root-parents-and-children">http://stackoverflow.com/questions/19330731/tree-implementation-in-java-root-parents-and-children</a></li>
+                    </ul>
                 </section>
 
 
