@@ -29,6 +29,17 @@
 			document.getElementsByTagName( 'head' )[0].appendChild( link );
 		</script>
 
+        <script>
+            (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                    m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+            })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+            ga('create', 'UA-50111242-1', 'sarahetter.com');
+            ga('send', 'pageview');
+
+        </script>
+
 		<!--[if lt IE 9]>
 		<script src="lib/js/html5shiv.js"></script>
 		<![endif]-->
@@ -56,8 +67,16 @@
                     <br><br><br><br>
                     <img src="img/territoriallogo.svg" style="max-width:25%;">
                     <aside class="notes">
-                        Have a few chapters to this talk. First browser works, then css optimizing, then devtools
-                        Won't talk about differences between browsers, just keep in mind that each one has their own implementation, and differ slightly
+                        <p>Have a few chapters to this talk. First browser works, then css optimizing, then devtools</p>
+                        <p>Won't talk about differences between browsers, just keep in mind that each one has their own implementation, and differ slightly</p>
+                    </aside>
+                </section>
+                <section>
+                    <h2>Why build performant sites?</h2>
+                    <a href="https://wpostats.com/">https://wpostats.com/</a>
+                    <aside class="notes">
+                        This is a site with blog entries about tons of sites that lowered page latency/load time & saw a positive output in regards to conversions
+                        <p>Makes you, your boss, your client money</p>
                     </aside>
                 </section>
 
@@ -103,6 +122,7 @@
                             <li>Style Sharing</li>
                             <li>CSS Rule Hash Tables</li>
                             <li>Ancestor Filters</li>
+                            <li>Fast Path</li>
                         </ul>
                         <aside class="notes">
                             <p>How the render tree is created is fairly important.
@@ -129,8 +149,15 @@
                         <img src="img/bloomfilter.png">
                         <small>By David Eppstein - self-made, originally for a talk at WADS 2007, Public Domain, https://commons.wikimedia.org/w/index.php?curid=2609777</small>
                         <aside class="notes">
+                            <p>Bloom filter tests whther a CSS rule is a member of the set of rules that match the element you are currently testing</p>
                             <p><strong>Ancestor Filters</strong> - the browser checks to see if this is part of a set. It uses something called a Bloom Filter. A bloom filter uses a large array, and sets all elements in array to one bit - 0. Then, when running elements through the filter, it uses another type of hash function, which gets a number of indices. Then the original bits in the index at those indices are set to 1. So when checking against this filter, you can know for sure if your element matches - if all of it’s hash indexes are 1, then it may be in the set. If any of them are 0, then it is definitely not in the set. This narrows down how many selectors the browser has to compare against.</p>
+
                         </aside>
+                    </section>
+
+                    <section>
+                        <h2>Fast Path</h2>
+                        <aside class="notes">Once browser has narrowed the amt of selectors, does a non recursive pass and matches selectors</aside>
                     </section>
 
 
@@ -243,14 +270,9 @@ ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
                         <p>However, one is way more semantic and easier to write. Don't JUST write it because it's faster, write it because it makes sense.</p>
                     </aside>
                 </section>
-
                 <section>
-                    <h2>Why optimize?</h2>
-                    <a href="https://wpostats.com/">https://wpostats.com/</a>
-                    <aside class="notes">
-                        This is a site with blog entries about tons of sites that lowered page latency/load time & saw a positive output in regards to conversions
-                    <p>Makes you, your boss, your client money</p>
-                    </aside>
+                    <img src="img/paulIrish.png">
+                    <aside class="notes">paul is on google's chrome team</aside>
                 </section>
 
                 <section>
@@ -276,9 +298,16 @@ ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
                         <h2>Load-time Optimization</h2>
                         <ul>
                             <li>CDN</li>
+                            <li>Don't use @import</li>
+                            <li>Browser Caching</li>
+                            <li>Gzip</li>
                             <li>Stylesheet Size</li>
                             <li>Critical CSS</li>
                         </ul>
+                        <aside class="notes">
+                            Setting expires headers to css file (setup in web server)
+                            <br> mod_expires in apache,
+                        </aside>
                     </section>
                     <section>
                         <h3>Stylesheet Size</h3>
@@ -288,6 +317,7 @@ ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
                             <li>Less specific, more modular code (Easier to maintain, too!)</li>
                             <li>In general: Write as little CSS as possible</li>
                             <li>DRY</li>
+                            <li>Minify</li>
                         </ul>
                         <aside class="notes">
                             <p>Avail in both grunt & gulp flavours</p>
@@ -371,7 +401,6 @@ ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
                         <ul>
                             <li>box-shadow</li>
                             <li>border-radius</li>
-                            <li>transparency (opacity and rgba/hsla)</li>
                             <li>transform</li>
                             <li>CSS filters</li>
                         </ul>
@@ -419,10 +448,11 @@ ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
                             <li>Watch for long frames</li>
                             <li>Diagnose the issue</li>
                         </ul>
+
+                        <aside class="notes">
+                            http://pitchfork.com/features/cover-story/reader/daft-punk/<br>
+                        </aside>
                     </section>
-                    <aside class="notes">
-                        http://pitchfork.com/features/cover-story/reader/daft-punk/<br>
-                    </aside>
                 </section>
 
                 <section>
@@ -430,8 +460,41 @@ ul.tagUL > li.tagLi > b.tagB > a.TagA.link {
                 </section>
 
                 <section>
+                    <a href="http://sarahetter.com">sarahetter.com</a>
+                    <br>
+                    <a href="http://twitter.com/SarahEtter_">@SarahEtter_</a>
+                    <br>
+                    <a href="mailto:sarah@sarahetter.com">sarah@sarahetter.com</a>
+                    <br>
+                    <a href="http://sarahetter.com/slides/cssbrowser">http://sarahetter.com/slides/cssbrowser</a>
+                </section>
+                <section>
                     <ul class="super-small">
                         <li><a href="http://stackoverflow.com/questions/19330731/tree-implementation-in-java-root-parents-and-children">http://stackoverflow.com/questions/19330731/tree-implementation-in-java-root-parents-and-children</a></li>
+                        <li><a href="http://www.smashingmagazine.com/2015/08/understanding-critical-css/?utm_content=buffer560ad&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer">http://www.smashingmagazine.com/2015/08/understanding-critical-css/?utm_content=buffer560ad&utm_medium=social&utm_source=twitter.com&utm_campaign=buffer</a></li>
+                        <li><a href="http://csswizardry.com/2012/05/keep-your-css-selectors-short/">http://csswizardry.com/2012/05/keep-your-css-selectors-short/</a></li>
+                        <li><a href="http://www.html5rocks.com/en/tutorials/internals/howbrowserswork/">http://www.html5rocks.com/en/tutorials/internals/howbrowserswork/</a></li>
+                        <li><a href="https://web.archive.org/web/20150907190404/http://calendar.perfplanet.com/2011/css-selector-performance-has-changed-for-the-better/">https://web.archive.org/web/20150907190404/http://calendar.perfplanet.com/2011/css-selector-performance-has-changed-for-the-better/</a></li>
+                        <li><a href="http://www.adobe.com/inspire/2013/05/irish-fast-css-on-mobile.html">http://www.adobe.com/inspire/2013/05/irish-fast-css-on-mobile.html</a></li>
+                        <li><a href="https://github.com/giakki/uncss">https://github.com/giakki/uncss</a></li>
+                        <li><a href="http://benfrain.com/css-performance-revisited-selectors-bloat-expensive-styles/">http://benfrain.com/css-performance-revisited-selectors-bloat-expensive-styles/</a></li>
+                        <li><a href="http://www.dayofjs.com/videos/22158462/web-browsers_alex-russel">http://www.dayofjs.com/videos/22158462/web-browsers_alex-russel</a></li>
+                        <li><a href="https://gist.github.com/paulirish/5d52fb081b3570c81e3a">https://gist.github.com/paulirish/5d52fb081b3570c81e3a</a></li>
+                        <li><a href="https://dl.dropboxusercontent.com/u/39519/talks/cssperf/index.html">https://dl.dropboxusercontent.com/u/39519/talks/cssperf/index.html</a></li>
+                        <li><a href="https://www.youtube.com/watch?v=SmE4OwHztCc">https://www.youtube.com/watch?v=SmE4OwHztCc</a></li>
+                        <li><a href="http://www.paulirish.com/2012/why-moving-elements-with-translate-is-better-than-posabs-topleft/">http://www.paulirish.com/2012/why-moving-elements-with-translate-is-better-than-posabs-topleft/</a></li>
+                        <li><a href="http://www.paulirish.com/2011/dom-html5-css3-performance/">http://www.paulirish.com/2011/dom-html5-css3-performance/</a></li>
+                        <li><a href="http://csstriggers.com/">http://csstriggers.com/</a></li>
+                        <li><a href="http://www.html5rocks.com/en/tutorials/speed/scrolling/">http://www.html5rocks.com/en/tutorials/speed/scrolling/</a></li>
+                        <li><a href="https://developers.google.com/web/fundamentals/performance/rendering/?hl=en">https://developers.google.com/web/fundamentals/performance/rendering/?hl=en</a></li>
+                        <li><a href="https://aerotwist.com/blog/pixels-are-expensive/">https://aerotwist.com/blog/pixels-are-expensive/</a></li>
+                        <li><a href="http://www.kellegous.com/j/2013/01/26/layout-performance/">http://www.kellegous.com/j/2013/01/26/layout-performance/</a></li>
+                        <li><a href="http://www.paulirish.com/2015/advanced-performance-audits-with-devtools/">http://www.paulirish.com/2015/advanced-performance-audits-with-devtools/</a></li>
+                        <li><a href="https://developers.google.com/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count">https://developers.google.com/web/fundamentals/performance/rendering/stick-to-compositor-only-properties-and-manage-layer-count</a></li>
+                        <li><a href="https://css-tricks.com/tale-of-animation-performance/">https://css-tricks.com/tale-of-animation-performance/</a></li>
+                        <li><a href="https://developer.chrome.com/devtools/docs/timeline">https://developer.chrome.com/devtools/docs/timeline</a></li>
+                        <li><a href="http://calendar.perfplanet.com/2013/the-runtime-performance-checklist/">http://calendar.perfplanet.com/2013/the-runtime-performance-checklist/</a></li>
+                        <li><a href="https://addyosmani.com/blog/performance-optimisation-with-timeline-profiles/">https://addyosmani.com/blog/performance-optimisation-with-timeline-profiles/</a></li>
                     </ul>
                 </section>
 
